@@ -26,6 +26,7 @@ public class PrnfbNotification implements HasUuid, Restricted {
   private static final String DEFAULT_NAME = "Notification";
   private final String filterRegexp;
   private final String filterString;
+  private final String triggerPathList;
   private final List<PrnfbHeader> headers;
   private final String injectionUrl;
   private final String injectionUrlRegexp;
@@ -91,6 +92,7 @@ public class PrnfbNotification implements HasUuid, Restricted {
     }
     this.updatePullRequestRefs = builder.isUpdatePullRequestRefs();
     this.filterString = emptyToNull(nullToEmpty(builder.getFilterString()).trim());
+    this.triggerPathList = emptyToNull(nullToEmpty(builder.getTriggerPathList()).trim());
     this.filterRegexp = emptyToNull(nullToEmpty(builder.getFilterRegexp()).trim());
     this.name = firstNonNull(emptyToNull(nullToEmpty(builder.getName()).trim()), DEFAULT_NAME);
     this.injectionUrl = emptyToNull(nullToEmpty(builder.getInjectionUrl()).trim());
@@ -126,6 +128,13 @@ public class PrnfbNotification implements HasUuid, Restricted {
         return false;
       }
     } else if (!filterString.equals(other.filterString)) {
+      return false;
+    }
+    if (triggerPathList == null) {
+      if (other.triggerPathList != null) {
+        return false;
+      }
+    } else if (!triggerPathList.equals(other.triggerPathList)) {
       return false;
     }
     if (headers == null) {
@@ -298,6 +307,10 @@ public class PrnfbNotification implements HasUuid, Restricted {
     return fromNullable(this.filterString);
   }
 
+  public Optional<String> getTriggerPathList() {
+    return fromNullable(this.triggerPathList);
+  }
+
   public List<PrnfbHeader> getHeaders() {
     return this.headers;
   }
@@ -399,6 +412,7 @@ public class PrnfbNotification implements HasUuid, Restricted {
     int result = 1;
     result = prime * result + (filterRegexp == null ? 0 : filterRegexp.hashCode());
     result = prime * result + (filterString == null ? 0 : filterString.hashCode());
+    result = prime * result + (triggerPathList == null ? 0 : triggerPathList.hashCode());
     result = prime * result + (headers == null ? 0 : headers.hashCode());
     result = prime * result + (httpVersion == null ? 0 : httpVersion.hashCode());
     result = prime * result + (injectionUrl == null ? 0 : injectionUrl.hashCode());

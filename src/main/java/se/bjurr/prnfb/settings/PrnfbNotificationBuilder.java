@@ -21,6 +21,7 @@ public class PrnfbNotificationBuilder {
   public PrnfbNotificationBuilder(
       final String filterRegexp,
       final String filterString,
+      final String triggerPathList,
       final List<PrnfbHeader> headers,
       final String injectionUrl,
       final String injectionUrlRegexp,
@@ -48,6 +49,7 @@ public class PrnfbNotificationBuilder {
       final String httpVersion) {
     this.filterRegexp = filterRegexp;
     this.filterString = filterString;
+    this.triggerPathList = triggerPathList;
     this.headers = headers;
     this.injectionUrl = injectionUrl;
     this.injectionUrlRegexp = injectionUrlRegexp;
@@ -86,6 +88,7 @@ public class PrnfbNotificationBuilder {
     b.user = from.getUser().orNull();
     b.filterRegexp = from.getFilterRegexp().orNull();
     b.filterString = from.getFilterString().orNull();
+    b.triggerPathList = from.getTriggerPathList().orNull();
     b.method = from.getMethod();
     b.postContent = from.getPostContent().orNull();
     b.headers = from.getHeaders();
@@ -110,6 +113,7 @@ public class PrnfbNotificationBuilder {
 
   private String filterRegexp;
   private String filterString;
+  private String triggerPathList;
   private List<PrnfbHeader> headers = newArrayList();
   private String injectionUrl;
   private String injectionUrlRegexp;
@@ -154,6 +158,10 @@ public class PrnfbNotificationBuilder {
 
   public String getFilterString() {
     return this.filterString;
+  }
+
+  public String getTriggerPathList() {
+    return this.triggerPathList;
   }
 
   public List<PrnfbHeader> getHeaders() {
@@ -280,6 +288,11 @@ public class PrnfbNotificationBuilder {
 
   public PrnfbNotificationBuilder withFilterString(final String filterString) {
     this.filterString = emptyToNull(filterString);
+    return this;
+  }
+
+  public PrnfbNotificationBuilder withTriggerPathList(final String triggerPathList) {
+    this.triggerPathList = emptyToNull(triggerPathList);
     return this;
   }
 

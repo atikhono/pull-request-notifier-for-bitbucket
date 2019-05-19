@@ -379,6 +379,11 @@
      <input class="text long-field" type="text" name="filterRegexp">
      <div class="description">The notification will only trigger if this regular expression matches the resolved string above.</div>
     </div>
+    <div class="field-group">
+     <label>Trigger paths</label>
+     <textarea class="textarea" rows="4" name="triggerPathList"></textarea>
+     <div class="description">The notification will only trigger if changes made in the paths matching specified regular expressions. Separated by a new line, can be in form of Ant regular expression.</div>
+    </div>
    </fieldset>
 
    <fieldset class="group">

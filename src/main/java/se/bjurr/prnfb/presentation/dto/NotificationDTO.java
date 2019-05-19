@@ -17,6 +17,7 @@ import se.bjurr.prnfb.settings.TRIGGER_IF_MERGE;
 public class NotificationDTO implements Comparable<NotificationDTO>, Restricted {
   private String filterRegexp;
   private String filterString;
+  private String triggerPathList;
   private List<HeaderDTO> headers;
   private String injectionUrl;
   private String injectionUrlRegexp;
@@ -76,6 +77,13 @@ public class NotificationDTO implements Comparable<NotificationDTO>, Restricted 
         return false;
       }
     } else if (!filterString.equals(other.filterString)) {
+      return false;
+    }
+    if (triggerPathList == null) {
+      if (other.triggerPathList != null) {
+        return false;
+      }
+    } else if (!triggerPathList.equals(other.triggerPathList)) {
       return false;
     }
     if (headers == null) {
@@ -248,6 +256,10 @@ public class NotificationDTO implements Comparable<NotificationDTO>, Restricted 
     return this.filterString;
   }
 
+  public String getTriggerPathList() {
+    return this.triggerPathList;
+  }
+
   public List<HeaderDTO> getHeaders() {
     return this.headers;
   }
@@ -344,6 +356,7 @@ public class NotificationDTO implements Comparable<NotificationDTO>, Restricted 
     int result = 1;
     result = prime * result + (filterRegexp == null ? 0 : filterRegexp.hashCode());
     result = prime * result + (filterString == null ? 0 : filterString.hashCode());
+    result = prime * result + (triggerPathList == null ? 0 : triggerPathList.hashCode());
     result = prime * result + (headers == null ? 0 : headers.hashCode());
     result = prime * result + (httpVersion == null ? 0 : httpVersion.hashCode());
     result = prime * result + (injectionUrl == null ? 0 : injectionUrl.hashCode());
@@ -379,6 +392,10 @@ public class NotificationDTO implements Comparable<NotificationDTO>, Restricted 
 
   public void setFilterString(final String filterString) {
     this.filterString = filterString;
+  }
+
+  public void setTriggerPathList(final String triggerPathList) {
+    this.triggerPathList = triggerPathList;
   }
 
   public void setHeaders(final List<HeaderDTO> headers) {
