@@ -22,6 +22,7 @@ public class NotificationTransformer {
     to.setRepositorySlug(from.getRepositorySlug().orNull());
     to.setFilterRegexp(from.getFilterRegexp().orNull());
     to.setFilterString(from.getFilterString().orNull());
+    to.setTriggerPathList(from.getTriggerPathList().orNull());
     to.setInjectionUrl(from.getInjectionUrl().orNull());
     to.setInjectionUrlRegexp(from.getInjectionUrlRegexp().orNull());
     to.setVariableName(from.getVariableName().orNull());
@@ -64,6 +65,7 @@ public class NotificationTransformer {
     return prnfbNotificationBuilder() //
         .withFilterRegexp(from.getFilterRegexp()) //
         .withFilterString(from.getFilterString()) //
+        .withTriggerPathList(from.getTriggerPathList()) //
         .setHeaders(toHeaders(from)) //
         .withInjectionUrl(from.getInjectionUrl()) //
         .withInjectionUrlRegexp(from.getInjectionUrlRegexp()) //
