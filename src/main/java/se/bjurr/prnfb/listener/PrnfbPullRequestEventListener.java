@@ -14,6 +14,10 @@ import static se.bjurr.prnfb.settings.TRIGGER_IF_MERGE.CONFLICTING;
 import static se.bjurr.prnfb.settings.TRIGGER_IF_MERGE.NOT_CONFLICTING;
 
 import com.atlassian.bitbucket.ServiceException;
+import com.atlassian.bitbucket.content.AbstractChangeCallback;
+import com.atlassian.bitbucket.content.Change;
+import com.atlassian.bitbucket.content.ChangeContext;
+import com.atlassian.bitbucket.content.ChangeSummary;
 import com.atlassian.bitbucket.event.pull.PullRequestCommentAddedEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestCommentDeletedEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestCommentEditedEvent;
@@ -30,6 +34,7 @@ import com.atlassian.bitbucket.event.pull.PullRequestRescopedEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestUpdatedEvent;
 import com.atlassian.bitbucket.pull.PullRequest;
 import com.atlassian.bitbucket.pull.PullRequestAction;
+import com.atlassian.bitbucket.pull.PullRequestChangesRequest;
 import com.atlassian.bitbucket.pull.PullRequestService;
 import com.atlassian.bitbucket.scm.Command;
 import com.atlassian.bitbucket.scm.ScmService;
@@ -160,13 +165,53 @@ public class PrnfbPullRequestEventListener {
             notification,
             variables,
             pullRequestEvent.getUser());
-    notify(
-        notification,
-        action,
-        pullRequestEvent.getPullRequest(),
-        renderer,
-        clientKeyStore,
-        settings.isShouldAcceptAnyCertificate());
+
+    if (notification.getTriggerPathList().isPresent()) {
+      String pathRegexpText = notification.getTriggerPathList().get();
+      String pathRegexpList[] = pathRegexpText.split("\\r?\\n");
+
+      // get changed paths
+      pullRequestService.streamChanges(
+          new PullRequestChangesRequest.Builder(pullRequestEvent.getPullRequest()).build(),
+          new AbstractChangeCallback() {
+            public boolean onChange(Change change) {
+              String changedFile = change.getPath().toString();
+              for (String pathRegexp : pathRegexpList) {
+                // Need to validate input actually
+                if (compile(pathRegexp).matcher(changedFile).find()) {
+                  // Found matching change, no more streaming of changes required
+                  // Firing notification
+                  notify_pizda(
+                      notification,
+                      action,
+                      pullRequestEvent.getPullRequest(),
+                      renderer,
+                      clientKeyStore,
+                      settings.isShouldAcceptAnyCertificate());
+                  return false;
+                }
+              }
+              // Continue streaming changes
+              return true;
+            }
+
+            public void onEnd(ChangeSummary summary) {
+              // noop
+            }
+
+            public void onStart(ChangeContext context) {
+              // noop
+            }
+          });
+    } else {
+      notify(
+          notification,
+          action,
+          pullRequestEvent.getPullRequest(),
+          renderer,
+          clientKeyStore,
+          settings.isShouldAcceptAnyCertificate());
+    }
   }
 
   @VisibleForTesting
@@ -259,6 +304,22 @@ public class PrnfbPullRequestEventListener {
                     .isConflicted();
               }
             });
+  }
+
+  public final NotificationResponse notify_pizda(
+      final PrnfbNotification notification,
+      final PrnfbPullRequestAction pullRequestAction,
+      final PullRequest pullRequest,
+      final PrnfbRenderer renderer,
+      final ClientKeyStore clientKeyStore,
+      final Boolean shouldAcceptAnyCertificate) {
+    return notify(
+        notification,
+        pullRequestAction,
+        pullRequest,
+        renderer,
+        clientKeyStore,
+        shouldAcceptAnyCertificate);
   }
 
   public NotificationResponse notify(
